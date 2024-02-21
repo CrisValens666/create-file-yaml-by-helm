@@ -1,0 +1,13 @@
+apiVersion: v2
+name: deploy-cmr-mx-sitio-publico
+description: Cmr mx sitio publico Chart
+version: 1.1.2
+dependencies:
+- name: helm-base
+  alias: sitio-publico
+  version: 1.0.2
+  repository: https://hub.fif.tech/chartrepo/sitio-publico
+- name: helm-base
+  alias: sitio-publico-next
+  version: 1.0.2
+  repository: https://hub.fif.tech/chartrepo/sitio-publico

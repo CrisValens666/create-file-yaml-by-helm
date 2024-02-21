@@ -1,0 +1,130 @@
+sitio-publico:
+  helmGlobalDependency:
+    podSecurityContext:
+      runAsUser: 0
+  replicaCount: 1
+  fullnameOverride: cmr-mx-sitio-publico
+  environment: qa
+  team: axmos
+  dependencies:
+    vault: true
+  image:
+    repository: sitio-publico/cmr-mx-sitio-publico-qa
+    pullPolicy: IfNotPresent
+    tag: de7bf9da32132b9e1f8106efa73b320fe33e42cb
+    addEnvironment: false
+  selectorLabels:
+    country: chile
+    component: web
+    partOf: axmos-poc
+  env: []
+  resources: {}
+  args: []
+  volumeMounts:
+  - name: falabella-com-mx-cert
+    readOnly: true
+    mountPath: /run/secrets/wildcard.falabella.com.mx.crt
+    subPath: wildcard.falabella.com.mx.crt
+  - name: falabella-com-mx-cert
+    readOnly: true
+    mountPath: /run/secrets/wildcard.falabella.com.mx.key
+    subPath: wildcard.falabella.com.mx.key
+  - name: fif-tech-cert
+    readOnly: true
+    mountPath: /run/secrets/wildcard.fif.tech.bundle.crt
+    subPath: wildcard.fif.tech.bundle.crt
+  - name: fif-tech-cert
+    readOnly: true
+    mountPath: /run/secrets/wildcard.fif.tech.key
+    subPath: wildcard.fif.tech.key
+  volumes:
+  - name: falabella-com-mx-cert
+    secret:
+      secretName: falabella-com-mx-cert
+      items:
+      - key: tls.crt
+        path: wildcard.falabella.com.mx.crt
+      - key: tls.key
+        path: wildcard.falabella.com.mx.key
+  - name: fif-tech-cert
+    secret:
+      secretName: fif-tech-cert
+      items:
+      - key: tls.crt
+        path: wildcard.fif.tech.bundle.crt
+      - key: tls.key
+        path: wildcard.fif.tech.key
+  vault:
+    role: crm-mx-qa
+    path: canales-cl-swarm-preprod
+    serviceAccount: vault-auth-fif
+  service:
+  - portName: https
+    type: ClusterIP
+    protocol: TCP
+    port: 443
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 80
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  configmap:
+    enabled: false
+    data:
+      EXAMPLE: test
+  livenessProbe:
+    enabled: false
+    yaml:
+      initialDelaySeconds: 10
+      periodSeconds: 3
+  readinessProbe:
+    enabled: false
+    yaml:
+      initialDelaySeconds: 10
+      periodSeconds: 3
+  containerExtraSpec:
+    yml: ''
+  hostAliases:
+    enabled: false
+    hostNames:
+    - ip: 0.0.0.0
+      hostnames:
+      - falabella-test
+  lifecycle:
+    enabled: false
+    preStop:
+      exec:
+        command: ''
+  virtualService:
+    enabled: false
+    annotations: {}
+    gateways:
+    - !!set
+      my-gateway: null
+    hosts:
+    - !!set
+      '*': null
+    http:
+    - match:
+        uri:
+          prefix: /my-path
+        route:
+          destination:
+            host: my-destination
+            port: 80
+    enableCorsPolicy: false
+    corsPolicy: {}
+  secrets:
+  - name: falabella-com-mx-cert
+    stringData:
+      tls.crt: vault:kv/domains/falabella_com_mx/certificate#falabella_com_mx_crt
+      tls.key: vault:kv/domains/falabella_com_mx/certificate#falabella_com_mx_key
+  - name: fif-tech-cert
+    stringData:
+      tls.crt: vault:kv/domains/fif_tech/certificate#fif_tech_crt
+      tls.key: vault:kv/domains/fif_tech/certificate#fif_tech_key
+sitio-publico-next: {}
