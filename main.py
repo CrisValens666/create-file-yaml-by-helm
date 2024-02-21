@@ -7,3 +7,5 @@ templateChart.write_yaml_to_file()
 
 
 templateValues.write_yaml_to_file()
+
+# TODO get values by service
